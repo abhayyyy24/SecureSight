@@ -2,9 +2,10 @@ import { prisma } from "../../../../../../lib/prisma";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-
-export async function PATCH(req: NextRequest, context: { params: { id: string } }) {
-  const incidentId = parseInt(context.params.id);
+export async function PATCH(req: NextRequest) {
+  const urlParts = req.nextUrl.pathname.split("/");
+  const id = urlParts[urlParts.length - 2];
+  const incidentId = parseInt(id);
 
   if (isNaN(incidentId)) {
     return NextResponse.json({ error: "Invalid incident ID" }, { status: 400 });
