@@ -2,14 +2,9 @@ import { prisma } from "../../../../../../lib/prisma";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-type Context = {
-  params: {
-    id: string;
-  };
-};
 
-export async function PATCH(req: NextRequest, { params }: Context) {
-  const incidentId = parseInt(params.id);
+export async function PATCH(req: NextRequest, context: { params: { id: string } }) {
+  const incidentId = parseInt(context.params.id);
 
   if (isNaN(incidentId)) {
     return NextResponse.json({ error: "Invalid incident ID" }, { status: 400 });
@@ -20,7 +15,6 @@ export async function PATCH(req: NextRequest, { params }: Context) {
       where: { id: incidentId },
       data: { resolved: true },
     });
-
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
     console.error("Error resolving incident:", error);
