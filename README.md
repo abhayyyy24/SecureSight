@@ -1,40 +1,104 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🔐 SecureSight
 
-## Getting Started
 
-First, run the development server:
+---
+
+## 🔗 Live Demo
+
+👉 [Visit SecureSight](https://securesight.vercel.app)
+
+---
+
+## 📦 Tech Stack
+
+- **Frontend**: Next.js App Router, React, TypeScript  
+- **Styling**: Tailwind CSS, Shadcn/UI  
+- **Backend**: Supabase (PostgreSQL), Prisma ORM  
+- **3D Visualization**: React Three Fiber (Three.js)  
+- **Hosting**: Vercel  
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/abhayyyy24/SecureSight.git
+cd SecureSight
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Generate Prisma Client
+
+```bash
+npx prisma generate
+```
+
+### 4. Start Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🗂️ Routes Overview
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Path | Description |
+|------|-------------|
+| `/` | Home Page |
+| `/dashboard` | Incident dashboard with video player and incident list |
+| `/3d` | 3D camera visualization using React Three Fiber |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 💡 Tech Decisions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Supabase
+- **Real-time database** to store and update incidents live
+- **File storage** for incident video recordings
+- Seamless integration with Next.js
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Prisma ORM
+- Provides **schema safety** and simplifies complex database queries
+- Ensures clean, maintainable backend access
+- Type-safe database operations
 
-## Deploy on Vercel
+### Tailwind CSS + Shadcn/UI
+- Enables **fast and responsive** UI development
+- Clean and reusable component system
+- Consistent design patterns
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### React Three Fiber (Three.js)
+- Used for rendering **3D environments** like camera locations and views
+- Interactive 3D visualization of surveillance systems
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-=======
-# SecureSight
->>>>>>> cf3c9e497ffceebaf7f9dd95a8b2359cf50f2dd6
+---
+
+
+## 🎯 Future Improvements
+
+Given more time, the following enhancements would be implemented:
+
+- [ ] **User Authentication** - Restrict access with secure login system
+- [ ] **Enhanced Timeline UI** - Complete and polish the incident timeline interface
+- [ ] **Full Responsiveness** - Optimize for all device sizes and orientations
+- [ ] **Camera View Switching** - Enable switching camera views via thumbnail clicks in the incident player
+
+
+---
+
+
+---
+
+## 📧 Contact
+
+Created by [@abhayyyy24](https://github.com/abhayyyy24)
+
+Hope you like it! 🚀
