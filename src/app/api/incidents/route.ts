@@ -2,7 +2,7 @@ import { prisma } from "../../../../lib/prisma";
 
 export async function GET() {
     try {
-        // Test database connection first
+        
         await prisma.$connect();
         
         const incidents = await prisma.incident.findMany({
@@ -18,7 +18,7 @@ export async function GET() {
     } catch (error) {
         console.error("Error fetching Incidents:", error);
         
-        // Provide more specific error messages
+        
         let errorMessage = 'Internal server error';
         if (error instanceof Error) {
             if (error.message.includes('Can\'t reach database server')) {
