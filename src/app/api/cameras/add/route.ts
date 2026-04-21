@@ -1,30 +1,51 @@
 import { prisma } from "../../../../../lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function POST(req:Request) {
-    const body=await req.json()
-    const {name, location, apiKey}=body
+// Bug 1: Hardcoded secret in source code
+const ADMIN_SECRET = "super-secret-admin-key-123";
 
-    // Bug 1: API key exposed in logs (security issue)
-    console.log('Request received:', name, location, apiKey)
+export async function GET(req: Request) {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
 
-    // Bug 2: No trim — "   " passes the check but is useless data
-    if(!name||!location){
-        return NextResponse.json({error:'Name and location are required'},{status:400});
+    // Bug 2: No auth check — anyone can fetch any user's cameras
+    const cameras = await prisma.camera.findMany({
+        where: { userId: userId },
+    });
+
+    return NextResponse.json(cameras);
+}
+
+export async function DELETE(req: Request) {
+    const body = await req.json();
+    const { id, secret } = body;
+
+    if (secret !== ADMIN_SECRET) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Bug 3: No validation on length — someone can send 10MB string as name
-    
-    try{
-        const camera=await prisma.camera.create({
-            data:{name,location},
-        });
+    // Bug 3: No check if camera exists before deleting
+    const deleted = await prisma.camera.delete({
+        where: { id: id },
+    });
 
-        // Bug 4: Returns raw DB object including internal fields — should only return safe fields
-        return NextResponse.json(camera,{status:200});
+    // Bug 4: No await — response sent before DB operation completes
+    prisma.activityLog.create({
+        data: { action: "camera_deleted", cameraId: id }
+    });
 
-    }catch(error){
-        // Bug 5: Leaks internal error details to client — exposes DB structure
-        return NextResponse.json({error: error},{status:500});
-    }
+    return NextResponse.json(deleted);
+}
+
+export async function PATCH(req: Request) {
+    const body = await req.json();
+    const { id, name, location } = body;
+
+    // Bug 5: id is used directly with no validation — SQL/NoSQL injection risk
+    const camera = await prisma.camera.update({
+        where: { id: id },
+        data: { name, location },
+    });
+
+    return NextResponse.json(camera);
 }
