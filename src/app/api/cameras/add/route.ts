@@ -41,7 +41,7 @@ export async function PATCH(req: Request) {
     const body = await req.json();
     const { id, name, location } = body;
 
-    // Bug 5: id is used directly with no validation — SQL/NoSQL injection risk
+    // Bug 5: id used directly with no validation — injection risk
     const camera = await prisma.camera.update({
         where: { id: id },
         data: { name, location },
