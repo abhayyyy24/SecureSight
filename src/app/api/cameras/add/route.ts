@@ -1,51 +1,58 @@
 import { prisma } from "../../../../../lib/prisma";
 import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 
-// Bug 1: Hardcoded secret in source code
-const ADMIN_SECRET = "super-secret-admin-key-123";
+// Bug 1: Hardcoded JWT secret
+const JWT_SECRET = "myapp_jwt_secret_2024";
+
+export async function POST(req: Request) {
+    const body = await req.json();
+    const { email, password } = body;
+
+    // Bug 2: No input validation — null/undefined will crash prisma query
+    const user = await prisma.user.findUnique({
+        where: { email: email },
+    });
+
+    // Bug 3: Timing attack — different response times reveal if email exists
+    if (!user) {
+        return NextResponse.json({ error: "Invalid email" }, { status: 401 });
+    }
+
+    if (user.password !== password) {
+        return NextResponse.json({ error: "Invalid password" }, { status: 401 });
+    }
+
+    // Bug 4: Token never expires
+    const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET);
+
+    // Bug 5: Password included in response
+    return NextResponse.json({ token, user });
+}
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
+    const token = searchParams.get("token");
 
-    // Bug 2: No auth check — anyone can fetch any user's cameras
-    const cameras = await prisma.camera.findMany({
-        where: { userId: userId },
+    // Bug 6: No check if token is null before verifying
+    const decoded = jwt.verify(token!, JWT_SECRET) as any;
+
+    const user = await prisma.user.findUnique({
+        where: { id: decoded.userId },
     });
 
-    return NextResponse.json(cameras);
+    return NextResponse.json(user);
 }
 
 export async function DELETE(req: Request) {
     const body = await req.json();
-    const { id, secret } = body;
+    const { userId } = body;
 
-    if (secret !== ADMIN_SECRET) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Bug 3: No check if camera exists before deleting
-    const deleted = await prisma.camera.delete({
-        where: { id: id },
+    // Bug 7: No authorization — any user can delete any other user
+    await prisma.user.delete({
+        where: { id: userId },
     });
 
-    // Bug 4: No await — response sent before DB operation completes
-    prisma.activityLog.create({
-        data: { action: "camera_deleted", cameraId: id }
-    });
-
-    return NextResponse.json(deleted);
-}
-
-export async function PATCH(req: Request) {
-    const body = await req.json();
-    const { id, name, location } = body;
-
-    // Bug 5: id used directly with no validation — injection risk
-    const camera = await prisma.camera.update({
-        where: { id: id },
-        data: { name, location },
-    });
-
-    return NextResponse.json(camera);
+    // Bug 8: No error handling — if user doesn't exist, prisma throws and crashes
+    return NextResponse.json({ message: "User deleted" });
 }
