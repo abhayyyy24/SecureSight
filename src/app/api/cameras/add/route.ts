@@ -31,17 +31,15 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
-    const { searchParams } = new URL(req.url);
-    const token = searchParams.get("token");
-
+    
     // Bug 6: No check if token is null before verifying
-    const decoded = jwt.verify(token!, JWT_SECRET) as any;
+    
 
     const user = await prisma.user.findUnique({
         where: { id: decoded.userId },
     });
 
-    return NextResponse.json(user);
+    
 }
 
 export async function DELETE(req: Request) {
