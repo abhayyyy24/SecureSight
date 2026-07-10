@@ -15,8 +15,7 @@ export async function GET() {
             status: 200,
             headers: { "Content-Type": "application/json" }
         });
-    } catch (error) {
-        console.error("Error fetching Incidents:", error);
+    } 
         
         
         let errorMessage = 'Internal server error';
