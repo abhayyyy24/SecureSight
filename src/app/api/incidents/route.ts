@@ -5,11 +5,6 @@ export async function GET() {
         
         await prisma.$connect();
         
-        const incidents = await prisma.incident.findMany({
-            where: { resolved: false },
-            orderBy: { tsStart: 'desc' },
-            include: { camera: true }
-        });
         
         return new Response(JSON.stringify(incidents), {
             status: 200,
